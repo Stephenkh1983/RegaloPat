@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Regalo de Cumpleaños</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f9e6f9; /* Un rosa suave */
+            color: #3a3a3a;
+            margin: 0;
+            padding: 20px;
+            text-align: center;
+        }
+        #game-container {
+            max-width: 600px;
+            margin: auto;
+            padding: 30px;
+            border-radius: 15px;
+            background-color: #ffffff;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+        .title {
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: #d5008f; /* Rosa fuerte */
+            margin-bottom: 20px;
+        }
+        button {
+            padding: 18px;
+            margin: 12px 0;
+            border: none;
+            border-radius: 10px;
+            background-color: #e040fb; /* Rosa morado */
+            color: white;
+            font-size: 1.1rem;
+            cursor: pointer;
+            width: 90%;
+            max-width: 320px;
+            transition: background-color 0.3s;
+        }
+        button:hover {
+            background-color: #ab47bc; /* Un tono más oscuro al pasar el mouse */
+        }
+        .hidden {
+            display: none;
+        }
+        .gift {
+            font-size: 1.4rem;
+            margin-top: 15px;
+            color: #d5008f;
+            font-weight: bold;
+        }
+        #final-text {
+            margin-top: 20px;
+            font-size: 1.1rem;
+            color: #3a3a3a;
+            line-height: 1.6;
+            font-style: italic;
+        }
+        .highlight {
+            font-weight: bold;
+            font-size: 1.5rem;
+            color: #9c27b0; /* Morado profundo */
+        }
+        .emoji {
+            font-size: 2rem;
+        }
+        .emoji-tulip {
+            font-size: 2.5rem;
+        }
+    </style>
+</head>
+<body>
+    <div id="game-container">
+        <div id="intro-text">
+            <h1 class="title">¡Feliz cumpleaños, Patzy! 🌸</h1>
+            <p>Este es un regalo interactivo 🎉</p>
+            <p><strong>Responde correctamente para desbloquear los regalos. Si fallas, perderás ese regalo, pero podrás continuar con el siguiente.</strong></p>
+            <p><strong>Mándame una captura de pantalla para reclamar los premios desbloqueados.</strong></p>
+            <button onclick="startGame()">Comenzar</button>
+        </div>
+
+        <div id="question-container" class="hidden"></div>
+        <div id="gift-container" class="hidden">
+            <h2>¡Has desbloqueado un regalo! 💝</h2>
+            <p class="gift"></p>
+            <button onclick="nextStep()">Siguiente</button>
+        </div>
+        <div id="end-container" class="hidden">
+            <h2 class="title">🎉 ¡Felicidades! Juego Terminado 🎉</h2>
+            <div id="unlocked-gifts"></div>
+            <div id="final-text">
+                <p>Todo lo que existe en el plano material es efímero, como hojas que caen con el viento del cambio. La permanencia es una ilusión, pues todo surge, se transforma y desaparece. Sin embargo, aquello que creamos desde el amor genuino trasciende las formas y los límites del tiempo.</p>
+                <p><span class="highlight">¡Feliz cumpleaños, un instante eterno en el que celebramos la maravilla de tu ser! 🌸</span></p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const questions = [
+            { 
+                question: "Imagina que en una sesión de terapia cuántica un cliente te cuenta que su mente es capaz de generar múltiples realidades que coexisten al mismo tiempo. Sin embargo, solo puede percibir una a la vez, dependiendo de su nivel de conciencia. ¿Qué fenómeno psicológico podría describir esta experiencia?", 
+                options: ["La superposición de estados mentales", "La disociación de la conciencia", "El colapso de la función de onda de la mente"], 
+                answer: "La disociación de la conciencia",
+                gift: "Un amigo incondicional para toda la vida 🌷"
+            },
+            { 
+                question: "Un cliente en terapia asegura que en ciertos momentos de su vida ha tenido la sensación de que sus decisiones crean múltiples líneas de tiempo. Él siente que al tomar una decisión, se bifurca el flujo del tiempo. ¿Qué fenómeno cuántico podría explicar esta percepción?", 
+                options: ["La interferencia cuántica", "El entrelazamiento cuántico", "El multiverso"], 
+                answer: "El multiverso",
+                gift: "$2000 pesos cada quincena por un tiempo definido 🌸"
+            },
+            { 
+                question: "Estás trabajando con un cliente que se siente constantemente observado, como si su conciencia tuviera un efecto directo sobre la realidad que lo rodea. Él cree que su percepción de los objetos altera su forma y naturaleza. ¿Qué fenómeno cuántico podría estar describiendo?", 
+                options: ["El efecto observador", "La paradoja cuántica", "La dualidad onda-partícula"], 
+                answer: "El efecto observador",
+                gift: "Mucha tranquilidad, seguridad, salud y momentos de alegría 🌷"
+            }
+        ];
+
+        let currentQuestionIndex = 0;
+        const unlockedGifts = [];
+        let incorrectAnswers = 0;
+
+        const startContainer = document.getElementById('intro-text');
+        const questionContainer = document.getElementById('question-container');
+        const giftContainer = document.getElementById('gift-container');
+        const endContainer = document.getElementById('end-container');
+        const giftText = document.querySelector('.gift');
+        const unlockedGiftsContainer = document.getElementById('unlocked-gifts');
+
+        function startGame() {
+            startContainer.classList.add('hidden');
+            loadQuestion();
+        }
+
+        function loadQuestion() {
+            if (currentQuestionIndex < questions.length) {
+                const questionData = questions[currentQuestionIndex];
+                questionContainer.innerHTML = `
+                    <p>${questionData.question}</p>
+                    ${questionData.options.map((opt, i) => `
+                        <button onclick="checkAnswer('${opt}')">${opt}</button>
+                    `).join('')}
+                `;
+                questionContainer.classList.remove('hidden');
+                giftContainer.classList.add('hidden');
+            } else {
+                displayFinalGifts();
+            }
+        }
+
+        function checkAnswer(selectedOption) {
+            const currentQuestion = questions[currentQuestionIndex];
+            if (selectedOption === currentQuestion.answer) {
+                unlockedGifts.push(currentQuestion.gift);
+                giftText.textContent = currentQuestion.gift;
+                questionContainer.classList.add('hidden');
+                giftContainer.classList.remove('hidden');
+            } else {
+                incorrectAnswers++;
+                alert("Respuesta incorrecta. 😔 Debes un abrazo a Esteban");
+                currentQuestionIndex++;
+                loadQuestion();
+            }
+        }
+
+        function nextStep() {
+            currentQuestionIndex++;
+            if (currentQuestionIndex < questions.length) {
+                loadQuestion();
+            } else {
+                giftContainer.classList.add('hidden');
+                displayFinalGifts();
+            }
+        }
+
+        function displayFinalGifts() {
+            unlockedGiftsContainer.innerHTML = `
+                <h3>Premios desbloqueados:</h3>
+                ${unlockedGifts.length > 0 ? unlockedGifts.map(gift => `<p>${gift}</p>`).join('') : '<p>No desbloqueaste ningún regalo.</p>'}
+                <h3>Abrazos que debes a Esteban:</h3>
+                <p>${incorrectAnswers > 0 ? `Debes ${incorrectAnswers} abrazo(s) a Esteban por las respuestas incorrectas.` : "¡No debes abrazos a Esteban! 😉"}</p>
+            `;
+            endContainer.classList.remove('hidden');
+        }
+    </script>
+</body>
+</html>
