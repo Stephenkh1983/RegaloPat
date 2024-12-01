@@ -101,22 +101,28 @@
     <script>
         const questions = [
             { 
-                question: "Imagina que en una sesión de terapia cuántica un cliente te cuenta que su mente es capaz de generar múltiples realidades que coexisten al mismo tiempo. Sin embargo, solo puede percibir una a la vez, dependiendo de su nivel de conciencia. ¿Qué fenómeno psicológico podría describir esta experiencia?", 
-                options: ["La superposición de estados mentales", "La disociación de la conciencia", "El colapso de la función de onda de la mente"], 
-                answer: "La disociación de la conciencia",
+                question: "El Laberinto de la Mente: Un psicólogo invita a su paciente a caminar por un laberinto que representa la mente humana. En cada esquina, el paciente debe tomar decisiones, pero en cada cruce hay una señal que refleja su estado emocional. Si el paciente no puede reconocer sus emociones, ¿qué camino tomará?", 
+                options: ["El camino que se ve más corto, sin tener en cuenta el entorno.", "El camino lleno de obstáculos, pero con señales claras para cada paso.", "El camino que nunca se acaba, pero siempre lleva al mismo lugar."], 
+                answer: "El camino que se ve más corto, sin tener en cuenta el entorno.",
                 gift: "Un amigo incondicional para toda la vida 🌷"
             },
             { 
-                question: "Un cliente en terapia asegura que en ciertos momentos de su vida ha tenido la sensación de que sus decisiones crean múltiples líneas de tiempo. Él siente que al tomar una decisión, se bifurca el flujo del tiempo. ¿Qué fenómeno cuántico podría explicar esta percepción?", 
-                options: ["La interferencia cuántica", "El entrelazamiento cuántico", "El multiverso"], 
-                answer: "El multiverso",
+                question: "La Caja de las Decisiones: Un hombre encuentra dos cajas en el suelo. En la primera, hay una nota que dice: 'Esta caja contiene lo que más deseas, pero no te arrepentirás'. En la segunda caja, la nota dice: 'Esta caja contiene lo que más temes, pero no será lo que esperas'. Después de un momento de reflexión, el hombre decide abrir la primera caja. ¿Por qué?", 
+                options: ["Porque teme a lo que podría encontrar en la segunda caja.", "Porque confía en que lo que desea está dentro de la primera caja.", "Porque piensa que la segunda caja tiene algo peor de lo que imagina."], 
+                answer: "Porque confía en que lo que desea está dentro de la primera caja.",
                 gift: "$2000 pesos cada quincena por un tiempo definido 🌸"
             },
             { 
-                question: "Estás trabajando con un cliente que se siente constantemente observado, como si su conciencia tuviera un efecto directo sobre la realidad que lo rodea. Él cree que su percepción de los objetos altera su forma y naturaleza. ¿Qué fenómeno cuántico podría estar describiendo?", 
-                options: ["El efecto observador", "La paradoja cuántica", "La dualidad onda-partícula"], 
-                answer: "El efecto observador",
+                question: "El Juego de las Sombras: En una habitación oscura, hay una luz que ilumina varias sombras proyectadas en las paredes. Cada sombra parece moverse por sí sola, como si tuviera vida propia. Sin embargo, cuando una persona enciende la luz, se da cuenta de que no hay nada que pueda proyectar esas sombras. ¿Cómo es posible que las sombras se muevan?", 
+                options: ["Las sombras son el reflejo de las emociones de la persona en la habitación.", "Las sombras son creadas por objetos invisibles que se mueven.", "Las sombras son una ilusión creada por la mente humana."], 
+                answer: "Las sombras son una ilusión creada por la mente humana.",
                 gift: "Mucha tranquilidad, seguridad, salud y momentos de alegría 🌷"
+            },
+            { 
+                question: "La Caja de los Recuerdos: En una sesión de terapia, el psicólogo le pide a su paciente que imagine una caja cerrada, que contiene todos los recuerdos olvidados. Si el paciente abre la caja sin prepararse para lo que encontrará, ¿qué sucederá?", 
+                options: ["Los recuerdos se mezclan y se desvanecen.", "Los recuerdos se vuelven más nítidos y le dan claridad.", "Los recuerdos se vuelven más intensos y difíciles de manejar."], 
+                answer: "Los recuerdos se vuelven más intensos y difíciles de manejar.",
+                gift: "Un viaje en familia a la playa o pueblito mágico 🌴"
             }
         ];
 
@@ -154,37 +160,37 @@
 
         function checkAnswer(selectedOption) {
             const currentQuestion = questions[currentQuestionIndex];
+            questionContainer.classList.add('hidden');
+
             if (selectedOption === currentQuestion.answer) {
                 unlockedGifts.push(currentQuestion.gift);
                 giftText.textContent = currentQuestion.gift;
-                questionContainer.classList.add('hidden');
                 giftContainer.classList.remove('hidden');
             } else {
                 incorrectAnswers++;
                 alert("Respuesta incorrecta. 😔 Debes un abrazo a Esteban");
-                currentQuestionIndex++;
-                loadQuestion();
+                if (currentQuestionIndex === questions.length - 1) {
+                    displayFinalGifts();
+                } else {
+                    nextStep();
+                }
             }
         }
 
         function nextStep() {
             currentQuestionIndex++;
-            if (currentQuestionIndex < questions.length) {
-                loadQuestion();
-            } else {
-                giftContainer.classList.add('hidden');
-                displayFinalGifts();
-            }
+            loadQuestion();
         }
 
         function displayFinalGifts() {
-            unlockedGiftsContainer.innerHTML = `
-                <h3>Premios desbloqueados:</h3>
-                ${unlockedGifts.length > 0 ? unlockedGifts.map(gift => `<p>${gift}</p>`).join('') : '<p>No desbloqueaste ningún regalo.</p>'}
-                <h3>Abrazos que debes a Esteban:</h3>
-                <p>${incorrectAnswers > 0 ? `Debes ${incorrectAnswers} abrazo(s) a Esteban por las respuestas incorrectas.` : "¡No debes abrazos a Esteban! 😉"}</p>
-            `;
+            giftContainer.classList.add('hidden');
+            questionContainer.classList.add('hidden');
             endContainer.classList.remove('hidden');
+            unlockedGiftsContainer.innerHTML = `
+                <h3>Regalos desbloqueados:</h3>
+                <ul>${unlockedGifts.map(gift => `<li>${gift}</li>`).join('')}</ul>
+                <p><strong>Abrazos pendientes para Esteban: ${incorrectAnswers}</strong></p>
+            `;
         }
     </script>
 </body>
